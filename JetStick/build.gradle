@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -28,10 +29,31 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.1.0-rc02'
+    }
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.manalkaff'
+            artifactId = 'jetstick'
+            version = '1.0'
+            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+
+            pom {
+                name = 'JetStick'
+                description = 'Virtual Joystick For Jetpack Compose Android'
+            }
+        }
+    }
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.compose.material3:material3:1.0.0-alpha13'

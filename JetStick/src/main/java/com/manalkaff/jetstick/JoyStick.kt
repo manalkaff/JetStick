@@ -1,81 +1,88 @@
 package com.manalkaff.jetstick
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 @Composable
-fun JoyStick(size: Int = 100, dotSize: Int = (size/3.3).roundToInt(), maxX: Int = size/2, maxY: Int = size/2, centerX: Float = (size/1.886).toFloat(), centerY: Float = (size/1.886).toFloat(), moved: (x: Float, y: Float) -> Unit) {
+fun JoyStick(
+    modifier: Modifier = Modifier,
+    size: Dp = 170.dp,
+    dotSize: Dp = 40.dp,
+    moved: (x: Float, y: Float) -> Unit = { _, _ -> }
+) {
     Box(
-        modifier = Modifier.size(
-            width = size.dp,
-            height = size.dp
-        )
+        modifier = modifier
+            .size(size)
     ) {
-        Image(
-            painterResource(id = R.drawable.joystick_background_1),
-            "aa",
-            modifier = Modifier.size(size.dp),
-        )
+        val maxRadius = with(LocalDensity.current) { (size / 2).toPx() }
+        val centerX = with(LocalDensity.current) { ((size - dotSize) / 2).toPx() }
+        val centerY = with(LocalDensity.current) { ((size - dotSize) / 2).toPx() }
+
         var offsetX by remember { mutableStateOf(centerX) }
         var offsetY by remember { mutableStateOf(centerY) }
+
+        Image(
+            painterResource(id = R.drawable.joystick_background_1),
+            "JoyStickBackground",
+            modifier = Modifier.size(size),
+        )
 
         Image(
             painterResource(id = R.drawable.joystick_dot_1),
             "JoyStickDot",
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
-                .size(dotSize.dp)
+                .size(dotSize)
                 .pointerInput(Unit) {
                     detectDragGestures(onDragEnd = {
                         offsetX = centerX
                         offsetY = centerY
                     }) { pointerInputChange: PointerInputChange, offset: Offset ->
-                        val x: Float = offsetX + offset.x-centerX
-                        val y: Float = offsetY + offset.y-centerY
+                        val x = offsetX + offset.x - centerX
+                        val y = offsetY + offset.y - centerY
                         pointerInputChange.consume()
-                        if(x > maxX || x < -maxX){
-                            if(x > maxX){
-                                offsetX = centerX + maxX
+                        val theta = atan(-y / x)
+                        if ((x.pow(2)) + (y.pow(2)) > maxRadius.pow(2)) {
+                            if (x > 0 && y > 0) {
+                                offsetX = centerX + (maxRadius * cos(theta))
+                                offsetY = centerY + (maxRadius * -sin(theta))
+                            } else if (x > 0 && y < 0) {
+                                offsetX = centerX + (maxRadius * cos(theta))
+                                offsetY = centerY + (maxRadius * -sin(theta))
+                            } else if (x < 0 && y > 0) {
+                                offsetX = centerX + (maxRadius * -cos(theta))
+                                offsetY = centerY + (maxRadius * sin(theta))
+                            } else {
+                                offsetX = centerX + (maxRadius * -cos(theta))
+                                offsetY = centerY + (maxRadius * sin(theta))
                             }
-                            if(x < -maxX){
-                                offsetX = centerX + -maxX
-                            }
-                        }else{
+                        } else {
                             offsetX += offset.x
-                        }
-
-                        if(y > maxY || y < -maxY){
-                            if(y > maxY){
-                                offsetY = centerY + maxY
-                            }
-                            if(y < -maxY){
-                                offsetY = centerY + -maxY
-                            }
-                        }else{
                             offsetY += offset.y
                         }
-
                     }
-                }.onGloballyPositioned { coordinates->
-                    moved(coordinates.positionInParent().x-centerX, -(coordinates.positionInParent().y-centerY))
+                }
+                .onGloballyPositioned { coordinates ->
+                    moved(
+                        coordinates.positionInParent().x - centerX,
+                        -(coordinates.positionInParent().y - centerY)
+                    )
                 },
         )
     }

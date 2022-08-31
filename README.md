@@ -16,14 +16,18 @@ Step 1. Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.manalkaff:JetStick:v1.0'
+	        implementation 'com.github.manalkaff:JetStick:v1.2'
 	}
   
   
 ## Example
 To use it, just simply add the JoyStick composable which return the X and Y joystick Offsets when it move
   ```
-  JoyStick(size = 100){ x: Float, y: Float ->
+  JoyStick(
+	Modifier.padding(30.dp),
+	size = 150.dp,
+	dotSize = 30.dp
+  ){ x: Float, y: Float ->
       Log.d("JoyStick", "$x, $y")
   }
   ```

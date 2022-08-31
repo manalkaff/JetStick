@@ -4,6 +4,9 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.manalkaff'
+version = '1.0'
+
 android {
     namespace 'com.manalkaff.jetstick'
     compileSdk 32
@@ -40,7 +43,7 @@ android {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'com.manalkaff'
+            groupId = 'com.github.manalkaff'
             artifactId = 'jetstick'
             version = '1.0'
             artifact("$buildDir/outputs/aar/${artifactId}-release.aar")

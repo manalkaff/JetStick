@@ -19,11 +19,20 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlin.math.*
 
+/**
+ * Returns the absolute value of the given number.
+ * @param size Joystick size
+ * @param dotSize Joystick Dot size
+ * @param backgroundImage Joystick Image Drawable
+ * @param dotImage Joystick Dot Image Drawable
+ */
 @Composable
 fun JoyStick(
     modifier: Modifier = Modifier,
     size: Dp = 170.dp,
     dotSize: Dp = 40.dp,
+    backgroundImage: Int = R.drawable.joystick_background_1,
+    dotImage: Int = R.drawable.joystick_dot_1,
     moved: (x: Float, y: Float) -> Unit = { _, _ -> }
 ) {
     Box(
@@ -38,13 +47,13 @@ fun JoyStick(
         var offsetY by remember { mutableStateOf(centerY) }
 
         Image(
-            painterResource(id = R.drawable.joystick_background_1),
+            painterResource(id = backgroundImage),
             "JoyStickBackground",
             modifier = Modifier.size(size),
         )
 
         Image(
-            painterResource(id = R.drawable.joystick_dot_1),
+            painterResource(id = dotImage),
             "JoyStickDot",
             modifier = Modifier
                 .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }

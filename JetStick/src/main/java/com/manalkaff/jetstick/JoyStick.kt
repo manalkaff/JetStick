@@ -46,6 +46,12 @@ fun JoyStick(
         var offsetX by remember { mutableStateOf(centerX) }
         var offsetY by remember { mutableStateOf(centerY) }
 
+        var radius by remember { mutableStateOf(0f) }
+        var theta by remember { mutableStateOf(0f) }
+
+        var positionX by remember { mutableStateOf(0f) }
+        var positionY by remember { mutableStateOf(0f) }
+
         Image(
             painterResource(id = backgroundImage),
             "JoyStickBackground",
@@ -56,43 +62,61 @@ fun JoyStick(
             painterResource(id = dotImage),
             "JoyStickDot",
             modifier = Modifier
-                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .offset {
+                    IntOffset(
+                        (positionX + centerX).roundToInt(),
+                        (positionY + centerY).roundToInt()
+                    )
+                }
                 .size(dotSize)
                 .pointerInput(Unit) {
                     detectDragGestures(onDragEnd = {
                         offsetX = centerX
                         offsetY = centerY
+                        radius = 0f
+                        theta = 0f
+                        positionX = 0f
+                        positionY = 0f
                     }) { pointerInputChange: PointerInputChange, offset: Offset ->
                         val x = offsetX + offset.x - centerX
                         val y = offsetY + offset.y - centerY
+
                         pointerInputChange.consume()
-                        val theta = atan(-y / x)
-                        if ((x.pow(2)) + (y.pow(2)) > maxRadius.pow(2)) {
-                            if (x > 0 && y > 0) {
-                                offsetX = centerX + (maxRadius * cos(theta))
-                                offsetY = centerY + (maxRadius * -sin(theta))
-                            } else if (x > 0 && y < 0) {
-                                offsetX = centerX + (maxRadius * cos(theta))
-                                offsetY = centerY + (maxRadius * -sin(theta))
-                            } else if (x < 0 && y > 0) {
-                                offsetX = centerX + (maxRadius * -cos(theta))
-                                offsetY = centerY + (maxRadius * sin(theta))
-                            } else {
-                                offsetX = centerX + (maxRadius * -cos(theta))
-                                offsetY = centerY + (maxRadius * sin(theta))
-                            }
+
+                        theta = if (x >= 0 && y >= 0) {
+                            atan(y / x)
+                        } else if (x < 0 && y >= 0) {
+                            (Math.PI).toFloat() + atan(y / x)
+                        } else if (x < 0 && y < 0) {
+                            -(Math.PI).toFloat() + atan(y / x)
                         } else {
-                            offsetX += offset.x
-                            offsetY += offset.y
+                            atan(y / x)
+                        }
+
+                        radius = sqrt((x.pow(2)) + (y.pow(2)))
+
+                        offsetX += offset.x
+                        offsetY += offset.y
+
+                        if (radius > maxRadius) {
+                            polarToCartesian(maxRadius, theta)
+                        } else {
+                            polarToCartesian(radius, theta)
+                        }.apply {
+                            positionX = first
+                            positionY = second
                         }
                     }
                 }
                 .onGloballyPositioned { coordinates ->
                     moved(
-                        coordinates.positionInParent().x - centerX,
-                        -(coordinates.positionInParent().y - centerY)
+                        (coordinates.positionInParent().x - centerX) / maxRadius,
+                        -(coordinates.positionInParent().y - centerY) / maxRadius
                     )
                 },
         )
     }
 }
+
+private fun polarToCartesian(radius: Float, theta: Float): Pair<Float, Float> =
+    Pair(radius * cos(theta), radius * sin(theta))

@@ -35,13 +35,10 @@ To use it, just simply add the JoyStick composable which return the X and Y joys
   ![image](https://user-images.githubusercontent.com/29891473/177016060-ce4b7784-cff1-42c2-bac8-0df2229f385f.png)
 
 ```
-JoyStick: -36.02227, 1.0222702
-JoyStick: -36.02227, 2.0222702
-JoyStick: -37.02227, 5.02227
-JoyStick: -37.02227, 9.02227
-JoyStick: -37.02227, 14.02227
-JoyStick: -37.02227, 18.02227
-JoyStick: -37.02227, 19.02227
-JoyStick: -37.02227, 20.02227
-JoyStick: -0.022270203, 0.022270203
+JoyStick: 0.7898413, 0.61714286
+JoyStick: 0.7847619, 0.61714286
+JoyStick: 0.7847619, 0.62222224
+JoyStick: 0.7847619, 0.62222224
+JoyStick: 0.7847619, 0.62222224
+JoyStick: 0.0025396824, -0.0025396824
 ````

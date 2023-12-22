@@ -16,7 +16,7 @@ Step 1. Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.manalkaff:JetStick:v1.2'
+	        implementation 'com.github.manalkaff:JetStick:1.2'
 	}
   
   
